@@ -1,10 +1,10 @@
 package com.trass_automation.trass_automation.modules.fetch;
 
-import com.trass_automation.trass_automation.dto.ProvisionalValueRequest;
+import com.trass_automation.trass_automation.dto.provisionalValue.CountryDollar;
+import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueRequest;
+import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueResponse;
 import com.trass_automation.trass_automation.modules.verification.RetryHandler;
 import com.trass_automation.trass_automation.utils.WaitForElements;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -25,8 +25,11 @@ public class FetchProvisionalValueHandler {
     private final RetryHandler retryHandler;
     private final Logger logger = LoggerFactory.getLogger(FetchProvisionalValueHandler.class);
 
-    public void fetchData(WebDriver driver, ProvisionalValueRequest provisionalValueRequest) {
+    public ProvisionalValueResponse fetchData(WebDriver driver, ProvisionalValueRequest provisionalValueRequest) {
         try {
+            // 응답생성
+            ProvisionalValueResponse provisionalValueResponse = new ProvisionalValueResponse();
+
             retryHandler.executeWithRetry(driver, drv -> {
                 // 품목조회 페이지 이동
                 drv.get("https://www.bandtrass.or.kr/customs/total.do?command=CUS001View&viewCode=CUS00401");
@@ -39,17 +42,22 @@ public class FetchProvisionalValueHandler {
                 // 품목코드 조회 시작
                 String itemCode = provisionalValueRequest.getItemCode();
                 String[] countries = provisionalValueRequest.getCountries();
-                searchItemCode(driver, itemCode, countries);
+                List<CountryDollar> countryDollars = searchItemCode(driver, itemCode, countries);
+
+                provisionalValueResponse.setItemCode(itemCode);
+                provisionalValueResponse.setCountryDollar(countryDollars);
 
             }, 5, 2000);
+
+            return provisionalValueResponse;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void searchItemCode(WebDriver driver, String itemCode, String[] countries) throws InterruptedException {
-        logger.info("ItemCode: {}", itemCode);
-        logger.info("Target countries: {}", Arrays.toString(countries));
+    private List<CountryDollar> searchItemCode(WebDriver driver, String itemCode, String[] countries) throws InterruptedException {
+        logger.debug("ItemCode: {}", itemCode);
+        logger.debug("Target countries: {}", Arrays.toString(countries));
 
         // 품목 초기화 및 입력
         WebElement inputBox = driver.findElement(By.cssSelector("#SelectCd"));
@@ -80,14 +88,14 @@ public class FetchProvisionalValueHandler {
 
             // (2) 파싱된 데이터를 합산
             for (CountryDollar cd : rows) {
-                BigDecimal dollarValue = cd.dollar;
+                BigDecimal dollarValue = cd.getDollar();
 
                 // 전체 합계
                 totalDollarSum = totalDollarSum.add(dollarValue);
 
-                // 5개 국가 중 하나인지 확인
-                if (targetCountries.containsKey(cd.country)) {
-                    targetCountries.put(cd.country, targetCountries.get(cd.country).add(dollarValue));
+                // 요청한 국가인지 확인
+                if (targetCountries.containsKey(cd.getCountry())) {
+                    targetCountries.put(cd.getCountry(), targetCountries.get(cd.getCountry()).add(dollarValue));
                 }
             }
 
@@ -97,23 +105,24 @@ public class FetchProvisionalValueHandler {
             currentPage++;
         }
 
-        logger.info("Total dollar sum: {}", totalDollarSum);
+        logger.debug("Total dollar sum: {}", totalDollarSum);
 
+        // 응답생성
+        List<CountryDollar> countryDollars = new ArrayList<>();
         for (String country : countries) {
+            CountryDollar countryDollar = new CountryDollar();
+            countryDollar.setCountry(country);
+
             BigDecimal targetCountryDollar = targetCountries.get(country);
-            logger.info("{}: {}", country, targetCountryDollar);
+            countryDollar.setDollar(targetCountryDollar);
+
+            countryDollars.add(countryDollar);
+            logger.debug("{}: {}", country, targetCountryDollar);
         }
+
+        return countryDollars;
     }
 
-    /**
-     * (country, dollar)를 담는 간단한 DTO
-     */
-    @AllArgsConstructor
-    @Data
-    private class CountryDollar {
-        String country;
-        BigDecimal dollar;
-    }
 
     private List<CountryDollar> parseTableData(WebDriver driver) {
         waitForElements.waitForTableLoaded(driver);

@@ -1,8 +1,8 @@
 package com.trass_automation.trass_automation.controller;
 
 import com.trass_automation.trass_automation.dto.LoginRequest;
-import com.trass_automation.trass_automation.dto.ProvisionalValueRequest;
-import com.trass_automation.trass_automation.dto.ProvisionalValueRequestWrapper;
+import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueRequestWrapper;
+import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueResponseWrapper;
 import com.trass_automation.trass_automation.service.ProvisionalValueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +22,8 @@ public class ProvisionalValueController {
     }
 
     @PostMapping
-    public void getProvisionalValue(@RequestBody ProvisionalValueRequestWrapper request) {
-        provisionalValueService.getProvisionalValue(request);
+    public ProvisionalValueResponseWrapper getProvisionalValue(@RequestBody ProvisionalValueRequestWrapper request) {
+        return provisionalValueService.getProvisionalValue(request);
     }
 
     @GetMapping("/test")
