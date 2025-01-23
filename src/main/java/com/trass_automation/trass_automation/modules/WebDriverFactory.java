@@ -16,5 +16,10 @@ public class WebDriverFactory {
 
         return new ChromeDriver(options);
     }
+
+    public WebDriver createDriver() {
+        ChromeOptions options = new ChromeOptions();
+        return new ChromeDriver(options);
+    }
 }
 

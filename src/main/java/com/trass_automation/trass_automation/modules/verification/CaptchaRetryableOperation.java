@@ -4,5 +4,5 @@ import org.openqa.selenium.WebDriver;
 
 @FunctionalInterface
 public interface CaptchaRetryableOperation {
-    public void execute(WebDriver driver);
+    void execute(WebDriver driver) throws InterruptedException;
 }

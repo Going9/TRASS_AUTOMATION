@@ -17,7 +17,7 @@ public class WaitForElements {
     }
 
     public void waitForTableLoaded(WebDriver driver) {
-        new WebDriverWait(driver, Duration.ofSeconds(10))
+        new WebDriverWait(driver, Duration.ofSeconds(30))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("table#table_list_1 tr[id]")));
     }
 
