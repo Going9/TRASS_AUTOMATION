@@ -1,6 +1,6 @@
 package com.trass_automation.trass_automation.controller;
 
-import com.trass_automation.trass_automation.dto.LoginRequest;
+import com.trass_automation.trass_automation.dto.login.LoginRequest;
 import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueRequestWrapper;
 import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueResponseWrapper;
 import com.trass_automation.trass_automation.service.ProvisionalValueService;

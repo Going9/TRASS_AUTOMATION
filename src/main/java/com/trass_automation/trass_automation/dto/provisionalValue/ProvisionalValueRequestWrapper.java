@@ -1,6 +1,6 @@
 package com.trass_automation.trass_automation.dto.provisionalValue;
 
-import com.trass_automation.trass_automation.dto.LoginRequest;
+import com.trass_automation.trass_automation.dto.login.LoginRequest;
 import lombok.Data;
 
 @Data

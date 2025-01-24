@@ -1,4 +1,4 @@
-package com.trass_automation.trass_automation.dto;
+package com.trass_automation.trass_automation.dto.login;
 
 import lombok.Getter;
 import lombok.Setter;

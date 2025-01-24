@@ -19,12 +19,13 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Component
-public class FetchProvisionalValueHandler {
+public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalValueRequest, ProvisionalValueResponse>{
 
     private final WaitForElements waitForElements;
     private final RetryHandler retryHandler;
     private final Logger logger = LoggerFactory.getLogger(FetchProvisionalValueHandler.class);
 
+    @Override
     public ProvisionalValueResponse fetchData(WebDriver driver, ProvisionalValueRequest provisionalValueRequest) {
         try {
             // 응답생성
