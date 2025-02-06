@@ -16,8 +16,12 @@ public class DetailValueService {
     private final FetchDetailValueHandler fetchDetailValueHandler;
 
     public DetailValueOfTwoItemsResponseWrapper getDetailValue(DetailValueOfTwoItemsRequest request) {
-        WebDriver driver = webDriverFactory.createDriver();
-        fetchDetailValueHandler.fetchData(driver, request);
+        String itemCode = request.getItemCode();
+        String[] domesticRegions = request.getDomesticRegions();
+        for (String domesticRegion : domesticRegions) {
+            WebDriver driver = webDriverFactory.createDriver();
+            fetchDetailValueHandler.fetchData(driver, itemCode, domesticRegion);
+        }
         return new DetailValueOfTwoItemsResponseWrapper();
     }
 }

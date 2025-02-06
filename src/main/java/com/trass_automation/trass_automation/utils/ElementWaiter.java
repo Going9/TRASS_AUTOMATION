@@ -5,30 +5,29 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-public class WaitForElements {
+public class ElementWaiter {
     private WebDriverWait wait;
 
-    public WaitForElements(WebDriver driver) {
+    public ElementWaiter(WebDriver driver) {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     }
 
-    public void waitForUrlToBe(String url) {
+    public void awaitUrl(String url) {
         wait.until(ExpectedConditions.urlToBe(url));
     }
 
-    public void waitForTableLoaded() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("table#table_list_1 tr[id]")));
+    public void awaitElementVisible(By locator) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    public WebElement waitForElementToBeClickable(String cssSelector) {
-        return wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(cssSelector)));
+    public WebElement awaitElementClickable(By locator) {
+        return wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
 
-    public WebElement waitForElementToBePresent(String cssSelector) {
-        return wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(cssSelector)));
+    public WebElement awaitElementPresent(By locator) {
+        return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
 }

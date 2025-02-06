@@ -33,6 +33,7 @@ public class RetryHandler {
                 }
             } catch (Exception e) {
                 logger.error("Catch error while operating");
+                logger.error(e.getMessage());
                 if (attempt == maxRetries) {
                     logger.error("Exceed max retries");
                     throw e;

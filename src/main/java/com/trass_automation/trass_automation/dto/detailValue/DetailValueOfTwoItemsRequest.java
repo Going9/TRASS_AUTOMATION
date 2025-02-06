@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class DetailValueOfTwoItemsRequest {
     String itemCode;
-    String[] domesticRegion;
+    String[] domesticRegions;
 }

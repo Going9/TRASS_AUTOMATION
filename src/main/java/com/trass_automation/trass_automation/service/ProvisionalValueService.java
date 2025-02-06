@@ -23,12 +23,6 @@ public class ProvisionalValueService {
     private final TRASSLoginHandler loginHandler;
     private final FetchProvisionalValueHandler fetchProvisionalValueHandler;
 
-    public void loginTRASS(LoginRequest request) {
-        WebDriver driver = webDriverFactory.createHeadlessDriver();
-        //WebDriver driver = webDriverFactory.createDriver();
-        loginHandler.login(driver, request.getId(), request.getPassword());
-    }
-
     public ProvisionalValueResponseWrapper getProvisionalValue(ProvisionalValueRequestWrapper request) {
         WebDriver driver = webDriverFactory.createHeadlessDriver();
 

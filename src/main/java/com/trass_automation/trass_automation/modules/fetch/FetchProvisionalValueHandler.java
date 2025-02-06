@@ -4,7 +4,7 @@ import com.trass_automation.trass_automation.dto.provisionalValue.CountryDollar;
 import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueRequest;
 import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueResponse;
 import com.trass_automation.trass_automation.modules.verification.RetryHandler;
-import com.trass_automation.trass_automation.utils.WaitForElements;
+import com.trass_automation.trass_automation.utils.ElementWaiter;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -21,23 +21,25 @@ import java.util.*;
 @Component
 public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalValueRequest, ProvisionalValueResponse>{
 
-    private final WaitForElements waitForElements;
     private final RetryHandler retryHandler;
     private final Logger logger = LoggerFactory.getLogger(FetchProvisionalValueHandler.class);
+    private ElementWaiter elementWaiter;
 
     @Override
     public ProvisionalValueResponse fetchData(WebDriver driver, ProvisionalValueRequest provisionalValueRequest) {
         try {
+            this.elementWaiter = new ElementWaiter(driver);
+
             // 응답생성
             ProvisionalValueResponse provisionalValueResponse = new ProvisionalValueResponse();
 
             retryHandler.executeWithRetry(driver, drv -> {
                 // 품목조회 페이지 이동
                 drv.get("https://www.bandtrass.or.kr/customs/total.do?command=CUS001View&viewCode=CUS00401");
-                waitForElements.waitForUrlToBe(drv, "https://www.bandtrass.or.kr/customs/total.do?command=CUS001View&viewCode=CUS00401", 30);
+                elementWaiter.awaitUrl("https://www.bandtrass.or.kr/customs/total.do?command=CUS001View&viewCode=CUS00401");
 
                 // 품목 다중조회 클릭
-                WebElement itemButton = waitForElements.waitForElementToBeClickable(drv, "#tr1 > td > div:nth-child(2) > label", 10);
+                WebElement itemButton = elementWaiter.awaitElementClickable(By.cssSelector("#tr1 > td > div:nth-child(2) > label"));
                 itemButton.click();
 
                 // 품목코드 조회 시작
@@ -66,7 +68,7 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
         inputBox.sendKeys(itemCode);
 
         // 품목 검색
-        WebElement searchButton = waitForElements.waitForElementToBeClickable(driver, "#form > div > div:nth-child(1) > div.text-center.m-t-sm > button.btn.btn-ok.btn-lg", 30);
+        WebElement searchButton = elementWaiter.awaitElementClickable(By.cssSelector("#form > div > div:nth-child(1) > div.text-center.m-t-sm > button.btn.btn-ok.btn-lg"));
         searchButton.click();
 
         // 품목 검색 결과 리스트 중 첫 페이지로 이동
@@ -126,7 +128,7 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
 
 
     private List<CountryDollar> parseTableData(WebDriver driver) {
-        waitForElements.waitForTableLoaded(driver);
+        elementWaiter.awaitElementVisible(By.cssSelector("table#table_list_1 tr[id]"));
 
         logger.info("Start table parsing..");
         List<CountryDollar> result = new ArrayList<>();
@@ -175,7 +177,7 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
      * 다음 페이지로 이동할 수 있으면 이동, 없으면 false
      */
     private boolean goNextPage(WebDriver driver, int pageNum) throws InterruptedException {
-        waitForElements.waitForTableLoaded(driver);
+        elementWaiter.awaitElementVisible(By.cssSelector("table#table_list_1 tr[id]"));
         String xpathForLink = String.format("//a[@href=\"javascript:pageLink('%d')\"]", pageNum);
         List<WebElement> nextPageLink = driver.findElements(By.xpath(xpathForLink));
         if (nextPageLink.isEmpty()) {
