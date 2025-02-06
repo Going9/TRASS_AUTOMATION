@@ -16,11 +16,6 @@ public class ProvisionalValueController {
 
     private final ProvisionalValueService provisionalValueService;
 
-    @PostMapping("/login")
-    public void loginTRASS(@RequestBody LoginRequest request) {
-        provisionalValueService.loginTRASS(request);
-    }
-
     @PostMapping
     public ProvisionalValueResponseWrapper getProvisionalValue(@RequestBody ProvisionalValueRequestWrapper request) {
         return provisionalValueService.getProvisionalValue(request);
