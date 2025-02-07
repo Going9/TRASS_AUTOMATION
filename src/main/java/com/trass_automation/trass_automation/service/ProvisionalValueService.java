@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class ProvisionalValueService {
     private final TRASSLoginHandler loginHandler;
     private final FetchProvisionalValueHandler fetchProvisionalValueHandler;
 
-    public ProvisionalValueResponseWrapper getProvisionalValue(ProvisionalValueRequestWrapper request) {
+    public ProvisionalValueResponseWrapper getProvisionalValue(ProvisionalValueRequestWrapper request) throws IOException {
         WebDriver driver = webDriverFactory.createHeadlessDriver();
 
         // request 파싱

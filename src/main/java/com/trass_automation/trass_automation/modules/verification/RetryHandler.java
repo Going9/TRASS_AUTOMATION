@@ -32,8 +32,7 @@ public class RetryHandler {
                     logger.info("Refresh current page");
                 }
             } catch (Exception e) {
-                logger.error("Catch error while operating");
-                logger.error(e.getMessage());
+                logger.error("Catch error while operating: ", e);
                 if (attempt == maxRetries) {
                     logger.error("Exceed max retries");
                     throw e;

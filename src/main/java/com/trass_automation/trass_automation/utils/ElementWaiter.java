@@ -12,7 +12,7 @@ public class ElementWaiter {
     private WebDriverWait wait;
 
     public ElementWaiter(WebDriver driver) {
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(180));
     }
 
     public void awaitUrl(String url) {
@@ -29,5 +29,9 @@ public class ElementWaiter {
 
     public WebElement awaitElementPresent(By locator) {
         return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+
+    public void awaitNewWindowOpen() {
+        wait.until(ExpectedConditions.numberOfWindowsToBe(2));
     }
 }
