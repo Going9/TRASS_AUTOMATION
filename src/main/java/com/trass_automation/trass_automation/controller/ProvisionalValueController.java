@@ -7,6 +7,8 @@ import com.trass_automation.trass_automation.service.ProvisionalValueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 
 // 잠정치 조회 컨트롤러
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class ProvisionalValueController {
     private final ProvisionalValueService provisionalValueService;
 
     @PostMapping
-    public ProvisionalValueResponseWrapper getProvisionalValue(@RequestBody ProvisionalValueRequestWrapper request) {
+    public ProvisionalValueResponseWrapper getProvisionalValue(@RequestBody ProvisionalValueRequestWrapper request) throws IOException {
         return provisionalValueService.getProvisionalValue(request);
     }
 
