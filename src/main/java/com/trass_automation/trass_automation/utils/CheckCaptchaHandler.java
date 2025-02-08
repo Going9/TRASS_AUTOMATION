@@ -17,7 +17,7 @@ public class CheckCaptchaHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(CheckCaptchaHandler.class);
 
-    /**]
+    /**
      * 캡챠 확인 메서드
      *
      * @param driver WebDriver 인스턴스
@@ -31,12 +31,13 @@ public class CheckCaptchaHandler {
                             By.cssSelector("#modal_captcha > div > div > div.modal-body")
                     )
             );
-            logger.warn("Captcha detected.");
+            logger.warn("Captcha detected, refresh browser");
+            driver.navigate().refresh();
             return true;
 
         } catch (TimeoutException e) {
             // 2초 안에 안 뜨면 없는 것으로 간주
-            logger.warn("Captcha not detected");
+            logger.info("Captcha not detected, keep crawling");
             return false;
 
         } catch (Exception e) {
