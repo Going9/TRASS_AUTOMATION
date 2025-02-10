@@ -2,12 +2,11 @@ package com.trass_automation.trass_automation.controller;
 
 import com.trass_automation.trass_automation.dto.detailValue.DetailValueOfTwoItemsRequest;
 import com.trass_automation.trass_automation.dto.detailValue.DetailValueOfTwoItemsResponseWrapper;
+import com.trass_automation.trass_automation.modules.WebDriverFactory;
 import com.trass_automation.trass_automation.service.DetailValueService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.openqa.selenium.WebDriver;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -21,5 +20,21 @@ public class DetailValueController {
     @PostMapping
     public DetailValueOfTwoItemsResponseWrapper getDetailValueOfTwoItems(@RequestBody DetailValueOfTwoItemsRequest request) throws IOException {
         return detailValueService.getDetailValue(request);
+    }
+
+    @GetMapping("/test")
+    public void testCaptcha() throws IOException {
+        WebDriverFactory webDriverFactory = new WebDriverFactory();
+        WebDriver driver = webDriverFactory.createDriver();
+
+        driver.get("https://www.google.com/recaptcha/api2/demo"); // reCAPTCHA 테스트 페이지
+
+        try {
+            Thread.sleep(150000); // 확장 프로그램이 실행될 시간을 기다림
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        driver.quit();
     }
 }
