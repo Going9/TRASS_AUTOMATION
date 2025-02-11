@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  # 첫 번째 컨테이너
+  trass-automation-a:
+    image: trass-automation:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    ports:
+      - target: 8080
+        published: 8081
+        protocol: tcp
+        mode: host
+
+
+  # 두 번째 컨테이너
+  trass-automation-b:
+    image: trass-automation:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    ports:
+      - target: 8080
+        published: 8082
+        protocol: tcp
+        mode: host
+
+  # 세 번째 컨테이너
+  trass-automation-c:
+    image: trass-automation:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    ports:
+      - target: 8080
+        published: 8083
+        protocol: tcp
+        mode: host
+
