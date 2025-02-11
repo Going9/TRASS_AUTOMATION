@@ -1,9 +1,11 @@
-# Dockerfile
 FROM openjdk:23-jdk-slim
 WORKDIR /app
 
-# 미리 빌드된 JAR 파일을 컨테이너에 복사 (빌드 후 JAR 파일 경로에 맞게 수정)
-COPY build/libs/trass-automation.jar app.jar
+# 컨테이너 내부에 logs 디렉토리 생성
+RUN mkdir -p /app/logs
+
+# 미리 빌드된 JAR 파일을 컨테이너에 복사
+COPY build/libs/TRASS_AUTOMATION-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
