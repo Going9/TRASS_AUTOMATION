@@ -1,0 +1,10 @@
+spring:
+  logging:
+    level:
+      root: INFO
+
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+    file:
+      name: logs/trass-automation.log
