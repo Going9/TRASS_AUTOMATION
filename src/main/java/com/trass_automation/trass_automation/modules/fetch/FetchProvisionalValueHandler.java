@@ -45,20 +45,21 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
                 // 품목코드 조회 시작
                 String itemCode = provisionalValueRequest.getItemCode();
                 String[] countries = provisionalValueRequest.getCountries();
-                List<CountryDollar> countryDollars = searchItemCode(driver, itemCode, countries);
+                SearchResult result = searchItemCode(driver, itemCode, countries);
 
                 provisionalValueResponse.setItemCode(itemCode);
-                provisionalValueResponse.setCountryDollar(countryDollars);
+                provisionalValueResponse.setCountryDollar(result.getCountryDollars());
+                provisionalValueResponse.setTotalDollarSum(String.valueOf(result.getTotalDollarSum()));
 
             }, 5, 2000);
-
+            driver.quit();
             return provisionalValueResponse;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private List<CountryDollar> searchItemCode(WebDriver driver, String itemCode, String[] countries) throws InterruptedException {
+    private SearchResult searchItemCode(WebDriver driver, String itemCode, String[] countries) throws InterruptedException {
         logger.debug("ItemCode: {}", itemCode);
         logger.debug("Target countries: {}", Arrays.toString(countries));
 
@@ -110,7 +111,7 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
 
         logger.debug("Total dollar sum: {}", totalDollarSum);
 
-        // 응답생성
+        // 응답생성: 각 국가별 달러 합계 리스트 생성
         List<CountryDollar> countryDollars = new ArrayList<>();
         for (String country : countries) {
             CountryDollar countryDollar = new CountryDollar();
@@ -123,9 +124,8 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
             logger.debug("{}: {}", country, targetCountryDollar);
         }
 
-        return countryDollars;
+        return new SearchResult(totalDollarSum, countryDollars);
     }
-
 
     private List<CountryDollar> parseTableData(WebDriver driver) {
         elementWaiter.awaitElementVisible(By.cssSelector("table#table_list_1 tr[id]"));
@@ -158,7 +158,6 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
                 logger.error(String.valueOf(e));
                 logger.warn("Failed to parse row: {}", row.getText(), e);
             }
-
         }
         return result;
     }
@@ -186,5 +185,24 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
         nextPageLink.get(0).click();
         Thread.sleep(5000);
         return true;
+    }
+
+    // 새로 추가된 SearchResult 클래스: totalDollarSum과 각 국가별 달러 리스트를 함께 반환
+    private static class SearchResult {
+        private final BigDecimal totalDollarSum;
+        private final List<CountryDollar> countryDollars;
+
+        public SearchResult(BigDecimal totalDollarSum, List<CountryDollar> countryDollars) {
+            this.totalDollarSum = totalDollarSum;
+            this.countryDollars = countryDollars;
+        }
+
+        public BigDecimal getTotalDollarSum() {
+            return totalDollarSum;
+        }
+
+        public List<CountryDollar> getCountryDollars() {
+            return countryDollars;
+        }
     }
 }

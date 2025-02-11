@@ -8,4 +8,5 @@ import java.util.List;
 public class ProvisionalValueResponse {
     String itemCode;
     List<CountryDollar> countryDollar;
+    String totalDollarSum;
 }
