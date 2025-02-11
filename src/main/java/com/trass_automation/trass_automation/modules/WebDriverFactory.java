@@ -17,7 +17,7 @@ public class WebDriverFactory {
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
-    public WebDriver createHeadlessDriver() throws IOException {
+    public WebDriver createHeadlessDriver() {
         ChromeOptions options = new ChromeOptions();
 
         // Headless 모드 설정
@@ -25,19 +25,42 @@ public class WebDriverFactory {
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.addArguments("user-agent=" + USER_AGENT);
 
-        // 프로필 분리
-        String tempUserDataDir = Files.createTempDirectory("chrome_profile_").toAbsolutePath().toString();
-        options.addArguments("--user-data-dir=" + tempUserDataDir);
+        // 1. 새로운 임시 사용자 프로필 생성 (쿠키, 캐시 등 초기화)
+        try {
+            String tempUserDataDir = Files.createTempDirectory("chrome_profile_").toAbsolutePath().toString();
+            options.addArguments("--user-data-dir=" + tempUserDataDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        // 2. 압축 풀린 확장 프로그램 로드
+        File extensionDir = new File("src/main/resources/extension/0.2.1_0"); // 확장 프로그램 폴더
+        if (extensionDir.exists()) {
+            options.addArguments("--load-extension=" + extensionDir.getAbsolutePath());
+        }
+
+        // 3. 기본 브라우저 환경설정 (알림, 팝업 차단 등)
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("profile.default_content_setting_values.notifications", 2);
+        prefs.put("profile.managed_default_content_settings.popups", 2);
+        options.setExperimentalOption("prefs", prefs);
+
+        // 4. WebDriver 생성
         WebDriver driver = new ChromeDriver(options);
+
+        // 5. 쿠키 삭제: 이전 세션의 캐시나 쿠키 초기화
+        driver.manage().deleteAllCookies();
+
+        // 6. Selenium 탐지 우회 스크립트 적용
         applyAntiDetection(driver);
+
         return driver;
     }
 
     public WebDriver createDriver() {
         ChromeOptions options = new ChromeOptions();
 
-        // 1️⃣ 새로운 임시 사용자 프로필을 생성하여 이전 세션(쿠키, 캐시 등) 정보를 초기화
+        // 1. 새로운 임시 사용자 프로필 생성 (쿠키, 캐시 등 초기화)
         try {
             String tempUserDataDir = Files.createTempDirectory("chrome_profile_").toAbsolutePath().toString();
             options.addArguments("--user-data-dir=" + tempUserDataDir);
@@ -48,22 +71,22 @@ public class WebDriverFactory {
         // Selenium 탐지 우회를 위한 옵션 추가
         options.addArguments("--disable-blink-features=AutomationControlled");
 
-        // 2️⃣ 압축 풀린 확장 프로그램 로드
+        // 2. 압축 풀린 확장 프로그램 로드
         File extensionDir = new File("src/main/resources/extension/0.2.1_0"); // 확장 프로그램 폴더
         if (extensionDir.exists()) {
             options.addArguments("--load-extension=" + extensionDir.getAbsolutePath());
         }
 
-        // 3️⃣ 기본 브라우저 환경설정 (알림, 팝업 차단 등)
+        // 3. 기본 브라우저 환경설정 (알림, 팝업 차단 등)
         Map<String, Object> prefs = new HashMap<>();
         prefs.put("profile.default_content_setting_values.notifications", 2);
         prefs.put("profile.managed_default_content_settings.popups", 2);
         options.setExperimentalOption("prefs", prefs);
 
-        // 4️⃣ WebDriver 생성
+        // 4. WebDriver 생성
         WebDriver driver = new ChromeDriver(options);
 
-        // 5️⃣ 쿠키 삭제: 이전 세션의 캐시나 쿠키가 남아있지 않도록 초기화
+        // 5. 쿠키 삭제: 이전 세션의 캐시나 쿠키 초기화
         driver.manage().deleteAllCookies();
 
         return driver;
