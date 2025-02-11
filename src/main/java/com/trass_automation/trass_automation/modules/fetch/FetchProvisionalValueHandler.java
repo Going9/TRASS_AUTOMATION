@@ -5,6 +5,7 @@ import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalVal
 import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueResponse;
 import com.trass_automation.trass_automation.modules.verification.RetryHandler;
 import com.trass_automation.trass_automation.utils.ElementWaiter;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -188,6 +189,7 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
     }
 
     // 새로 추가된 SearchResult 클래스: totalDollarSum과 각 국가별 달러 리스트를 함께 반환
+    @Getter
     private static class SearchResult {
         private final BigDecimal totalDollarSum;
         private final List<CountryDollar> countryDollars;
@@ -197,12 +199,5 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
             this.countryDollars = countryDollars;
         }
 
-        public BigDecimal getTotalDollarSum() {
-            return totalDollarSum;
-        }
-
-        public List<CountryDollar> getCountryDollars() {
-            return countryDollars;
-        }
     }
 }
