@@ -49,36 +49,28 @@ public class FetchDetailValueHandler {
                 // 상세조회 페이지 이동
                 drv.get("https://www.bandtrass.or.kr/customs/total.do?command=CUS001View&viewCode=CUS00301");
                 elementWaiter.awaitUrl("https://www.bandtrass.or.kr/customs/total.do?command=CUS001View&viewCode=CUS00301");
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 복합형 2개 항목 클릭
                 elementWaiter.awaitElementClickable(By.cssSelector("#search_div > table:nth-child(1) > tbody > tr > td > div:nth-child(3) > label")).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 품목 && 국내지역 클릭
                 elementWaiter.awaitElementClickable(By.cssSelector("#GODS_DIV")).click();
                 elementWaiter.awaitElementClickable(By.cssSelector("#LOCATION_DIV")).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 폼목 선택
                 elementWaiter.awaitElementClickable(By.xpath("//*[@id=\"GODS_TYPE\"]/option[@value=\"H\"]")).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 기존 창 저장
                 String currentWindow = drv.getWindowHandle();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 폼목 검색 클릭(이 시점에 새로운 창이 열림)
                 elementWaiter.awaitElementClickable(By.cssSelector("div#FILTER1_POPUP_CODE")).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 새 창 대기
                 elementWaiter.awaitNewWindowOpen();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 새로운 창으로 전환
                 windowSwitcher.switchToNewWindow(currentWindow);
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 새 창 열리고,
                 // HS단위선택
@@ -86,44 +78,35 @@ public class FetchDetailValueHandler {
                 String convertedCodeSize = String.valueOf(codeSize);
                 Select selectOfCodeSize = new Select(elementWaiter.awaitElementClickable(By.cssSelector("select#UNIT")));
                 selectOfCodeSize.selectByValue(convertedCodeSize);
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 코드 입력
                 WebElement codeInputBox = elementWaiter.awaitElementClickable(By.cssSelector("input#CustomText"));
                 codeInputBox.clear();
                 codeInputBox.sendKeys(itemCode);
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 직접 입력 추가 버튼 클릭
                 elementWaiter.awaitElementClickable(By.cssSelector("#CustomCheck")).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 선택적용 버튼 클릭
                 elementWaiter.awaitElementClickable(By.cssSelector("#wrap > div > div.tb_in_wrap > div > p:nth-child(2) > button")).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 기존 창으로 전환
                 drv.switchTo().window(currentWindow);
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 시군구 선택
                 elementWaiter.awaitElementClickable(By.xpath("//*[@id=\"LOCATION_TYPE\"]/option[@value=\"B\"]")).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 선택하세요 버튼 클릭
                 elementWaiter.awaitElementClickable(By.cssSelector("#FILTER2_SELECT_CODE > span > div > button")).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 검색
                 WebElement searchInput = drv.findElement(By.cssSelector("#FILTER2_SELECT_CODE > span > div > ul > li.multiselect-item.multiselect-filter > div > input"));
                 searchInput.sendKeys(domesticRegion);
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 지역 이름 클릭
                 WebElement desiredLabel = elementWaiter.awaitElementClickable(By.xpath(String.format("//*[@id='FILTER2_SELECT_CODE']/span/div/ul/li/a/label[contains(text(),'%s')]", domesticRegion)));
                 WebElement parentLink = desiredLabel.findElement(By.xpath("./.."));
                 parentLink.click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 조회하기 버튼 클릭
                 WebElement button = drv.findElement(By.cssSelector("#form > div > div:nth-child(1) > div.text-center.m-t-sm > button"));

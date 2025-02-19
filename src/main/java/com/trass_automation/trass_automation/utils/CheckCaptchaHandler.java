@@ -24,7 +24,7 @@ public class CheckCaptchaHandler {
         WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(3));
 
         try {
-            // **1️⃣ CAPTCHA 감지 여부 확인**
+            // 1. CAPTCHA 감지 여부 확인
             WebElement captchaModal = shortWait.until(
                     ExpectedConditions.visibilityOfElementLocated(
                             By.cssSelector("#modal_captcha > div > div > div.modal-body")
@@ -33,33 +33,20 @@ public class CheckCaptchaHandler {
 
             logger.warn("CAPTCHA detected! Waiting for user to solve...");
 
-            // **2️⃣ CAPTCHA 해결을 위한 대기 시간 (사용자가 해결할 동안 대기)**
-            int waitTime = 180; // 120초 (2분) 대기
+            // 2. CAPTCHA 해결을 위한 대기
+            int waitTime = 180; // 180초 (3분) 대기
             for (int i = waitTime; i > 0; i--) {
-                System.out.print("\rWaiting for CAPTCHA to be solved: " + i + " seconds remaining...");
+                logger.info("Waiting captcha for {} seconds...", i);
                 Thread.sleep(1000);
             }
-            System.out.println("\nCAPTCHA solving time ended.");
 
-            // **3️⃣ Alert 확인 후 자동으로 "OK" 클릭**
             try {
                 Alert alert = driver.switchTo().alert();
-                logger.info("Alert found: " + alert.getText());
                 alert.accept();  // OK 버튼 클릭
-                logger.info("Alert dismissed.");
-            } catch (NoAlertPresentException ex) {
-                logger.info("No alert found, checking for modal.");
-            }
+                logger.info("Captcha successfully verified!");
 
-            // **4️⃣ CSS 기반 모달 확인 후 자동 클릭**
-            try {
-                WebElement modalOkButton = shortWait.until(
-                        ExpectedConditions.elementToBeClickable(By.cssSelector(".modal-footer .btn-primary"))
-                );
-                modalOkButton.click();
-                logger.info("Modal dismissed.");
-            } catch (Exception e) {
-                logger.info("No modal detected.");
+            } catch (NoAlertPresentException e) {
+                logger.error("Cannot find alert.");
             }
 
         } catch (TimeoutException e) {
@@ -68,47 +55,6 @@ public class CheckCaptchaHandler {
 
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error occurred while checking for captcha", e);
-        }
-    }
-
-
-    /**
-     * reCAPTCHA 자동 해결 메서드
-     *
-     * @param driver WebDriver 인스턴스
-     * @return 성공 여부 (true: 해결됨, false: 해결 실패)
-     */
-    private boolean solveRecaptcha(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-        try {
-            // **1️⃣ reCAPTCHA iframe 내부로 이동**
-            WebElement iframe = wait.until(ExpectedConditions.presenceOfElementLocated(
-                    By.cssSelector("iframe[title='reCAPTCHA']")
-            ));
-            driver.switchTo().frame(iframe);
-            logger.info("Switched to reCAPTCHA iframe");
-
-            // **2️⃣ reCAPTCHA 체크박스 클릭**
-            WebElement checkbox = wait.until(ExpectedConditions.elementToBeClickable(
-                    By.className("recaptcha-checkbox-border")
-            ));
-            checkbox.click();
-            logger.info("Clicked on reCAPTCHA checkbox");
-
-            // **3️⃣ 원래 페이지로 돌아가기**
-            driver.switchTo().defaultContent();
-
-            // **4️⃣ reCAPTCHA 해결 확인**
-            boolean captchaSolved = wait.until(ExpectedConditions.attributeContains(
-                    By.cssSelector("iframe[title='reCAPTCHA']"), "src", "recaptcha/api2/anchor"
-            ));
-
-            return captchaSolved;
-
-        } catch (Exception e) {
-            logger.error("Error solving reCAPTCHA: " + e.getMessage());
-            return false;
         }
     }
 

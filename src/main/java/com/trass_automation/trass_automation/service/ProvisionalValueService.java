@@ -30,7 +30,7 @@ public class ProvisionalValueService {
         try {
             semaphore.acquire();
 
-            WebDriver driver = webDriverFactory.createDriver();
+            WebDriver driver = webDriverFactory.createHeadlessDriver();
 
             // request 파싱
             LoginRequest loginRequest = request.getLoginRequest();
