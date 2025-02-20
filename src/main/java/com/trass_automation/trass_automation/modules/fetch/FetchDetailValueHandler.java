@@ -32,7 +32,7 @@ public class FetchDetailValueHandler {
     private WindowSwitcher windowSwitcher;
 
     public DetailValueOfTwoItemsResponse fetchData(String itemCode, String domesticRegion, String year, String month) throws IOException {
-        WebDriver driver = webDriverFactory.createDriver();
+        WebDriver driver = webDriverFactory.createHeadlessDriver();
         this.elementWaiter = new ElementWaiter(driver);
         this.windowSwitcher = new WindowSwitcher(driver, elementWaiter);
 

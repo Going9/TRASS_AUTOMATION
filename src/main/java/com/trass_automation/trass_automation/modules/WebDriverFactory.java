@@ -26,14 +26,9 @@ public class WebDriverFactory {
         options.addArguments("user-agent=" + USER_AGENT);
         options.addArguments("--user-data-dir=/home/iggyu/.config/google-chrome/Default");
 
-        // 2. 확장 프로그램 로드
-        File crxFile = new File("src/main/resources/extension/0.2.1_0.crx");
-        if (crxFile.exists()) {
-            // CRX 확장 프로그램 추가
-            options.addExtensions(crxFile);
-        } else {
-            System.out.println("CRX file not found! Path: " + crxFile.getAbsolutePath());
-        }
+        // 2. 익스텐션 탑재
+        String extensionPath = "src/main/resources/extension/dknlfmjaanfblgfdfebhijalfmhmjjjo.zip";
+        options.addExtensions(new File(extensionPath));
 
         // 3. 기본 브라우저 환경설정 (알림, 팝업 차단 등)
         Map<String, Object> prefs = new HashMap<>();
@@ -55,12 +50,13 @@ public class WebDriverFactory {
 
     public WebDriver createDriver() {
         ChromeOptions options = new ChromeOptions();
+
+        // 익스텐션 탑재
         String extensionPath = "src/main/resources/extension/dknlfmjaanfblgfdfebhijalfmhmjjjo.zip";
         options.addExtensions(new File(extensionPath));
 
-//        options.addExtensions(new File("src/main/resources/extension/0.2.1_0.crx"));
-
         // Selenium 탐지 우회를 위한 옵션 추가
+        options.addArguments("user-agent=" + USER_AGENT);
         options.addArguments("--disable-blink-features=AutomationControlled");
 
         // 기본 브라우저 환경설정 (알림, 팝업 차단 등)

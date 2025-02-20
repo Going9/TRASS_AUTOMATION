@@ -34,7 +34,7 @@ public class CheckCaptchaHandler {
             logger.warn("CAPTCHA detected! Waiting for user to solve...");
 
             // 2. CAPTCHA 해결을 위한 대기
-            int waitTime = 180; // 180초 (3분) 대기
+            int waitTime = 240; // 240초 (4분) 대기
             for (int i = waitTime; i > 0; i--) {
                 logger.info("Waiting captcha for {} seconds...", i);
                 Thread.sleep(1000);
