@@ -53,7 +53,6 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
                 provisionalValueResponse.setTotalDollarSum(String.valueOf(result.getTotalDollarSum()));
 
             }, 5, 2000);
-            driver.quit();
             return provisionalValueResponse;
         } catch (Exception e) {
             throw new RuntimeException(e);

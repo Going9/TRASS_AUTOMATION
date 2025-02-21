@@ -30,7 +30,7 @@ public class ProvisionalValueService {
         try {
             semaphore.acquire();
 
-            WebDriver driver = webDriverFactory.createHeadlessDriver();
+            WebDriver driver = webDriverFactory.createDriver();
 
             // request 파싱
             LoginRequest loginRequest = request.getLoginRequest();
@@ -47,11 +47,13 @@ public class ProvisionalValueService {
                 provisionalValueResponseList.add(provisionalValueResponse);
             }
             provisionalValueResponseWrapper.setProvisionalValueResponses(provisionalValueResponseList);
-
+            driver.quit();
             return provisionalValueResponseWrapper;
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Thread interrupted while waiting for semaphore", e);
+
         } finally {
             semaphore.release();
         }
