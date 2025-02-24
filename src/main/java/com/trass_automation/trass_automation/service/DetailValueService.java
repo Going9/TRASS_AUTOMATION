@@ -17,11 +17,11 @@ import java.util.concurrent.Semaphore;
 public class DetailValueService {
 
     private final FetchDetailValueHandler fetchDetailValueHandler;
-    private final Semaphore semaphore = new Semaphore(1);
+    private final Semaphore SharedSemaphore;
 
-    public DetailValueOfTwoItemsResponseWrapper getDetailValue(DetailValueOfTwoItemsRequest request) throws IOException {
+    public DetailValueOfTwoItemsResponseWrapper getDetailValue(DetailValueOfTwoItemsRequest request) {
         try {
-            semaphore.acquire();
+            SharedSemaphore.acquire();
 
             // 응답생성
             DetailValueOfTwoItemsResponseWrapper response = new DetailValueOfTwoItemsResponseWrapper();
@@ -45,7 +45,7 @@ public class DetailValueService {
             throw new RuntimeException("Thread interrupted while waiting for semaphore", e);
 
         } finally {
-            semaphore.release();
+            SharedSemaphore.release();
         }
     }
 }
