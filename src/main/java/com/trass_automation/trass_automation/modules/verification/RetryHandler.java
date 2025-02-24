@@ -1,6 +1,5 @@
 package com.trass_automation.trass_automation.modules.verification;
 
-import com.trass_automation.trass_automation.utils.CheckCaptchaHandler;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WindowType;

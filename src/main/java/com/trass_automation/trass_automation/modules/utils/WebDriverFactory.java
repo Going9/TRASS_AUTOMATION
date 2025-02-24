@@ -1,4 +1,4 @@
-package com.trass_automation.trass_automation.modules;
+package com.trass_automation.trass_automation.modules.utils;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -7,8 +7,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +15,38 @@ public class WebDriverFactory {
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
+    public WebDriver createTestHeadlessDriver() {
+        ChromeOptions options = new ChromeOptions();
+
+        // 1. Headless 모드 설정
+        options.addArguments("--headless=new");
+        options.addArguments("--disable-blink-features=AutomationControlled");
+        options.addArguments("user-agent=" + USER_AGENT);
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+
+        // 익스텐션 탑재
+        String extensionPath = "src/main/resources/extension/dknlfmjaanfblgfdfebhijalfmhmjjjo.zip";
+        options.addExtensions(new File(extensionPath));
+
+        // 3. 기본 브라우저 환경설정 (알림, 팝업 차단 등)
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("profile.default_content_setting_values.notifications", 2);
+        prefs.put("profile.managed_default_content_settings.popups", 2);
+        options.setExperimentalOption("prefs", prefs);
+
+        // 4. WebDriver 생성
+        WebDriver driver = new ChromeDriver(options);
+
+        // 5. 쿠키 삭제: 이전 세션의 캐시나 쿠키 초기화
+        driver.manage().deleteAllCookies();
+
+        // 6. Selenium 탐지 우회 스크립트 적용
+        applyAntiDetection(driver);
+
+        return driver;
+    }
+
     public WebDriver createHeadlessDriver() {
         ChromeOptions options = new ChromeOptions();
 
@@ -24,10 +54,11 @@ public class WebDriverFactory {
         options.addArguments("--headless=new");
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.addArguments("user-agent=" + USER_AGENT);
-        options.addArguments("--user-data-dir=/home/iggyu/.config/google-chrome/Default");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
 
         // 2. 익스텐션 탑재
-        String extensionPath = "src/main/resources/extension/dknlfmjaanfblgfdfebhijalfmhmjjjo.zip";
+        String extensionPath = "/app/extension/dknlfmjaanfblgfdfebhijalfmhmjjjo.zip";
         options.addExtensions(new File(extensionPath));
 
         // 3. 기본 브라우저 환경설정 (알림, 팝업 차단 등)
@@ -70,6 +101,9 @@ public class WebDriverFactory {
 
         // 5. 쿠키 삭제: 이전 세션의 캐시나 쿠키 초기화
         driver.manage().deleteAllCookies();
+
+        // 6. Selenium 탐지 우회 스크립트 적용
+        applyAntiDetection(driver);
 
         return driver;
     }
