@@ -2,11 +2,11 @@ package com.trass_automation.trass_automation.modules.fetch;
 
 import com.trass_automation.trass_automation.dto.detailValue.DetailValueOfTwoItemsResponse;
 import com.trass_automation.trass_automation.dto.detailValue.DomesticRegionDollar;
-import com.trass_automation.trass_automation.modules.WebDriverFactory;
+import com.trass_automation.trass_automation.modules.utils.ElementWaiter;
+import com.trass_automation.trass_automation.modules.utils.WebDriverFactory;
+import com.trass_automation.trass_automation.modules.utils.WindowSwitcher;
+import com.trass_automation.trass_automation.modules.verification.CheckCaptchaHandler;
 import com.trass_automation.trass_automation.modules.verification.RetryHandler;
-import com.trass_automation.trass_automation.utils.CheckCaptchaHandler;
-import com.trass_automation.trass_automation.utils.ElementWaiter;
-import com.trass_automation.trass_automation.utils.WindowSwitcher;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @Component
@@ -31,7 +30,7 @@ public class FetchDetailValueHandler {
     private ElementWaiter elementWaiter;
     private WindowSwitcher windowSwitcher;
 
-    public DetailValueOfTwoItemsResponse fetchData(String itemCode, String domesticRegion, String year, String month) throws IOException {
+    public DetailValueOfTwoItemsResponse fetchData(String itemCode, String domesticRegion, String year, String month) {
         WebDriver driver = webDriverFactory.createHeadlessDriver();
         this.elementWaiter = new ElementWaiter(driver);
         this.windowSwitcher = new WindowSwitcher(driver, elementWaiter);
@@ -42,6 +41,8 @@ public class FetchDetailValueHandler {
             DomesticRegionDollar domesticRegionDollar = new DomesticRegionDollar();
 
             retryHandler.executeWithRetry(driver, drv -> {
+                drv.manage().window().maximize();
+
                 logger.info("Start fetching detail value..");
                 logger.info("ItemCode: {}", itemCode);
                 logger.info("DomesticRegion: {}", domesticRegion);
@@ -116,33 +117,26 @@ public class FetchDetailValueHandler {
 
                 // 정확한 시군구 이름 추출
                 String regionName = elementWaiter.awaitElementPresent(By.id("FILTER2_KOR")).getText();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 기존 창 저장
                 currentWindow = drv.getWindowHandle();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 시군구 클릭
                 elementWaiter.awaitElementClickable(By.xpath(String.format("//td[@title='%s']", regionName))).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 새 창 열릴 때까지 대기
                 logger.info("Start waiting for main table, it may takes some minutes...");
                 elementWaiter.awaitNewWindowOpen();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 새 창으로 드라이버 전환
                 windowSwitcher.switchToNewWindow(currentWindow);
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 입력받은 년도 클릭
                 elementWaiter.awaitElementClickable(By.xpath(String.format("//td[@title='%s년']", year))).click();
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 입력받은 월의 수출액 추출
                 String exportAmount = elementWaiter.awaitElementPresent(By.xpath(String.format("//tr[td[1][contains(normalize-space(.), '%s월')]]/td[2]", month))).getText();
                 logger.info("{} 수출액: {}", regionName, exportAmount);
-                checkCaptchaHandler.checkForCaptcha(drv);
 
                 detailValueOfTwoItemsResponse.setItemCode(itemCode);
                 detailValueOfTwoItemsResponse.setYear(year);

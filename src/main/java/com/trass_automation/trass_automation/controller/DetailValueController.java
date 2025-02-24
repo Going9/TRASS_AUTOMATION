@@ -2,9 +2,9 @@ package com.trass_automation.trass_automation.controller;
 
 import com.trass_automation.trass_automation.dto.detailValue.DetailValueOfTwoItemsRequest;
 import com.trass_automation.trass_automation.dto.detailValue.DetailValueOfTwoItemsResponseWrapper;
-import com.trass_automation.trass_automation.modules.WebDriverFactory;
+import com.trass_automation.trass_automation.modules.utils.WebDriverFactory;
 import com.trass_automation.trass_automation.service.DetailValueService;
-import com.trass_automation.trass_automation.utils.CheckCaptchaHandler;
+import com.trass_automation.trass_automation.modules.verification.CheckCaptchaHandler;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import org.springframework.web.bind.annotation.*;

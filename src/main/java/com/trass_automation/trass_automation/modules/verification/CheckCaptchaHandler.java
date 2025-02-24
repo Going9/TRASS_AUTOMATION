@@ -1,4 +1,4 @@
-package com.trass_automation.trass_automation.utils;
+package com.trass_automation.trass_automation.modules.verification;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;

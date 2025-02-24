@@ -1,4 +1,4 @@
-package com.trass_automation.trass_automation.utils;
+package com.trass_automation.trass_automation.modules.utils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
