@@ -1,10 +1,14 @@
 package com.trass_automation.trass_automation.modules.fetch;
 
+import com.trass_automation.trass_automation.dto.login.LoginRequest;
 import com.trass_automation.trass_automation.dto.provisionalValue.CountryDollar;
 import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueRequest;
 import com.trass_automation.trass_automation.dto.provisionalValue.ProvisionalValueResponse;
+import com.trass_automation.trass_automation.modules.login.LoginHandler;
+import com.trass_automation.trass_automation.modules.utils.ElementWaiter;
+import com.trass_automation.trass_automation.modules.utils.WebDriverFactory;
+import com.trass_automation.trass_automation.modules.verification.CheckCaptchaHandler;
 import com.trass_automation.trass_automation.modules.verification.RetryHandler;
-import com.trass_automation.trass_automation.utils.ElementWaiter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
@@ -20,21 +24,29 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Component
-public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalValueRequest, ProvisionalValueResponse>{
+public class FetchProvisionalValueHandler{
 
     private final RetryHandler retryHandler;
     private final Logger logger = LoggerFactory.getLogger(FetchProvisionalValueHandler.class);
+    private final CheckCaptchaHandler checkCaptchaHandler;
+    private final WebDriverFactory webDriverFactory;
+    private final LoginHandler loginHandler;
     private ElementWaiter elementWaiter;
 
-    @Override
-    public ProvisionalValueResponse fetchData(WebDriver driver, ProvisionalValueRequest provisionalValueRequest) {
-        try {
-            this.elementWaiter = new ElementWaiter(driver);
+    public ProvisionalValueResponse fetchData(ProvisionalValueRequest provisionalValueRequest, LoginRequest loginRequest) {
+        WebDriver driver = webDriverFactory.createHeadlessDriver();
+        this.elementWaiter = new ElementWaiter(driver);
 
+        try {
             // 응답생성
             ProvisionalValueResponse provisionalValueResponse = new ProvisionalValueResponse();
 
             retryHandler.executeWithRetry(driver, drv -> {
+                drv.manage().window().maximize();
+
+                // 로그인
+                loginHandler.login(drv, loginRequest.getId(), loginRequest.getPassword());
+
                 // 품목조회 페이지 이동
                 drv.get("https://www.bandtrass.or.kr/customs/total.do?command=CUS001View&viewCode=CUS00401");
                 elementWaiter.awaitUrl("https://www.bandtrass.or.kr/customs/total.do?command=CUS001View&viewCode=CUS00401");
@@ -42,6 +54,7 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
                 // 품목 다중조회 클릭
                 WebElement itemButton = elementWaiter.awaitElementClickable(By.cssSelector("#tr1 > td > div:nth-child(2) > label"));
                 itemButton.click();
+                checkCaptchaHandler.checkForCaptcha(drv);
 
                 // 품목코드 조회 시작
                 String itemCode = provisionalValueRequest.getItemCode();
@@ -55,6 +68,7 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
             }, 5, 2000);
             driver.quit();
             return provisionalValueResponse;
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -72,6 +86,7 @@ public class FetchProvisionalValueHandler implements FetchStrategy<ProvisionalVa
         // 품목 검색
         WebElement searchButton = elementWaiter.awaitElementClickable(By.cssSelector("#form > div > div:nth-child(1) > div.text-center.m-t-sm > button.btn.btn-ok.btn-lg"));
         searchButton.click();
+        checkCaptchaHandler.checkForCaptcha(driver);
 
         // 품목 검색 결과 리스트 중 첫 페이지로 이동
         forceGoToPageOne(driver);
