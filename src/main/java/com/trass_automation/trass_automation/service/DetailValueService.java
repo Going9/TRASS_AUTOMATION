@@ -5,9 +5,9 @@ import com.trass_automation.trass_automation.dto.detailValue.DetailValueOfTwoIte
 import com.trass_automation.trass_automation.dto.detailValue.DetailValueOfTwoItemsResponseWrapper;
 import com.trass_automation.trass_automation.modules.fetch.FetchDetailValueHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -19,6 +19,9 @@ public class DetailValueService {
     private final FetchDetailValueHandler fetchDetailValueHandler;
     private final Semaphore SharedSemaphore;
 
+    @Cacheable(value = "detailValueCache",
+               keyGenerator = "detailValueKeyGenerator",
+               unless = "#request == null ")
     public DetailValueOfTwoItemsResponseWrapper getDetailValue(DetailValueOfTwoItemsRequest request) {
         try {
             SharedSemaphore.acquire();

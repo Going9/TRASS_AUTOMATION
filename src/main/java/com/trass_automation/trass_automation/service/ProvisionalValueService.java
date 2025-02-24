@@ -9,6 +9,7 @@ import com.trass_automation.trass_automation.modules.fetch.FetchProvisionalValue
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ public class ProvisionalValueService {
     private final Semaphore SharedSemaphore;
     private final Logger logger = LoggerFactory.getLogger(ProvisionalValueService.class);
 
+    @Cacheable(value = "provisionalValueCache",
+               keyGenerator = "provisionalValueKeyGenerator",
+               unless = "#request == null ")
     public ProvisionalValueResponseWrapper getProvisionalValue(ProvisionalValueRequestWrapper request) {
         try {
             SharedSemaphore.acquire();

@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class DetailValueOfTwoItemsResponse {
-    String itemCode;
-    String year;
-    String month;
-    DomesticRegionDollar domesticRegionDollars;
+    private String itemCode;
+    private String year;
+    private String month;
+    private DomesticRegionDollar domesticRegionDollars;
 }

@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class DetailValueOfTwoItemsResponseWrapper {
-    List<DetailValueOfTwoItemsResponse> detailValueOfTwoItemsResponseList;
+    private List<DetailValueOfTwoItemsResponse> detailValueOfTwoItemsResponseList;
 }

@@ -8,3 +8,7 @@ spring:
 
     file:
       name: logs/trass-automation.log
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}

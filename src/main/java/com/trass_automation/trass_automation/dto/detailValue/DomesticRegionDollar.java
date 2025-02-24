@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class DomesticRegionDollar {
-    String domesticRegion;
-    String dollar;
+    private String domesticRegion;
+    private String dollar;
 }
